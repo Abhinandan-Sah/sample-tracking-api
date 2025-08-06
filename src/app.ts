@@ -1,13 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import sampleRoutes from './api/sample/sample.routes';
-
+import { clerkMiddleware } from '@clerk/express'
 // Create the Express application
 const app = express();
 
 // Middlewares
 app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(express.json()); // Parse incoming JSON requests
+app.use(clerkMiddleware()); // Initialize Clerk middleware
+
 
 // A simple root route to check if the server is running
 app.get('/', (req, res) => {
