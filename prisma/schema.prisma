@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// generator client {
+//   provider = "prisma-client-js"
+//   output   = "../src/generated/prisma"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sample {
+  id          String   @id @default(cuid())
+  patientName String
+  sampleType  String // e.g., "Blood", "Urine", "Swab"
+  status      Status   @default(PENDING)
+
+  createdAt   DateTime @default(now())
+  collectedAt DateTime? // Optional: set when collected
+
+  hospitalId String
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+
+  agentId String
+  agent   User   @relation(fields: [agentId], references: [id])
+
+  // For the bonus feature
+  delayReason String?
+}
+
+model Hospital {
+  id      String   @id @default(cuid())
+  name    String
+  address String
+  samples Sample[]
+}
+
+// This model will be linked to your Clerk users
+model User {
+  id      String   @id // This will be the Clerk User ID
+  email   String   @unique
+  name    String?
+  samples Sample[]
+}
+
+enum Status {
+  PENDING
+  COLLECTED
+  DELAYED // For the bonus feature
+}
